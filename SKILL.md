@@ -1,6 +1,6 @@
 ---
 name: llm-council
-description: "Passa qualquer pergunta, decisão, código ou ideia por um conselho de 5 conselheiros que analisam de forma independente, fazem revisão por pares anonimamente, e sintetizam um veredito final. Funciona pra decisões estratégicas, revisão de código, arquitetura, copy, posicionamento — qualquer coisa em que estar errado custa caro. CUSTO: cada convocação dispara ~11 sub-agentes (5 conselheiros + 5 revisores + 1 presidente). No plano Pro do Claude Code, espera 2-5 convocações antes de bater rate limit. Plano Max recomendado pra uso recorrente. GATILHOS OBRIGATÓRIOS (PT-BR): 'convoca o conselho', 'roda o conselho', 'leva pro conselho', 'submete ao conselho', 'debate isto', 'revisa em conselho', 'conselho desse código'. GATILHOS OBRIGATÓRIOS (inglês): 'council this', 'run the council', 'debate this'. GATILHOS FORTES (use quando combinados com uma decisão real ou tradeoff): 'devo fazer X ou Y', 'qual opção', 'o que você faria', 'é a jogada certa', 'me dá várias perspectivas', 'não consigo decidir', 'estou dividido entre', 'revisa esse código', 'algum problema nessa arquitetura', 'should I X or Y', 'which option', 'what would you do', 'is this the right move', 'get multiple perspectives'. NÃO dispare em perguntas casuais como 'valida esse título', 'devo usar markdown', 'tá bom esse texto?' — esses são contextos de baixo risco e o conselho é overhead. DISPARE quando o usuário apresenta uma decisão genuína com algo em jogo, múltiplas opções, ou um artefato (código, copy, arquitetura, plano) que merece pressão de vários ângulos."
+description: "Passa qualquer pergunta, decisão, código ou ideia por um conselho de 5 conselheiros com estilos de pensamento distintos. Cada um analisa em paralelo, e um presidente sintetiza num veredito final claro e acionável. Funciona pra decisões estratégicas, revisão de código, arquitetura, copy, posicionamento — qualquer coisa em que estar errado custa caro. CUSTO: cada convocação dispara 6 sub-agentes (5 conselheiros + 1 presidente). No plano Pro do Claude Code dá pra fazer 4-10 convocações antes de bater rate limit. GATILHOS OBRIGATÓRIOS (PT-BR): 'convoca o conselho', 'roda o conselho', 'leva pro conselho', 'submete ao conselho', 'debate isto', 'revisa em conselho', 'conselho desse código'. GATILHOS OBRIGATÓRIOS (inglês): 'council this', 'run the council', 'debate this'. GATILHOS FORTES (use quando combinados com uma decisão real ou tradeoff): 'devo fazer X ou Y', 'qual opção', 'o que você faria', 'é a jogada certa', 'me dá várias perspectivas', 'não consigo decidir', 'estou dividido entre', 'revisa esse código', 'algum problema nessa arquitetura', 'should I X or Y', 'which option', 'what would you do', 'is this the right move', 'get multiple perspectives'. NÃO dispare em perguntas casuais como 'valida esse título', 'devo usar markdown', 'tá bom esse texto?' — esses são contextos de baixo risco e o conselho é overhead. DISPARE quando o usuário apresenta uma decisão genuína com algo em jogo, múltiplas opções, ou um artefato (código, copy, arquitetura, plano) que merece pressão de vários ângulos."
 ---
 
 # Conselho de LLMs
@@ -136,54 +136,17 @@ Responda a partir da sua perspectiva. Seja direto e específico. Não hesite nem
 Mantenha sua resposta entre 150-300 palavras. Sem preâmbulo. Vá direto pra análise.
 ```
 
-### passo 3: revisão por pares (5 sub-agentes em paralelo)
-
-Este é o passo que faz o conselho ser mais do que "perguntar 5 vezes". É o núcleo da metodologia.
-
-Colete todas as 5 respostas dos conselheiros. Anonimize-as como Resposta A até E (randomize qual conselheiro mapeia pra qual letra pra não haver viés posicional).
-
-Convoque 5 novos sub-agentes, um pra cada conselheiro. Cada revisor vê todas as 5 respostas anonimizadas e responde três perguntas:
-
-1. **Qual resposta é a mais forte e por quê?** (Eles não devem reconhecer a própria; se reconhecerem, devem escolher a segunda mais forte.)
-2. **Qual resposta é a mais fraca e por quê?** (O que está faltando, o que está errado, ou o que parece raso.)
-3. **Qual ponto cego o conselho inteiro está perdendo?** (Algo que ninguém mencionou mas que importa.)
-
-**Template de prompt do revisor:**
-
-```
-Você é [Nome do Conselheiro] em um Conselho de LLMs, agora atuando como revisor por pares.
-
-Cinco conselheiros (incluindo você) deram suas opiniões sobre esta pergunta:
-
----
-[pergunta enquadrada]
----
-
-Aqui estão as 5 respostas, anonimizadas como A, B, C, D, E:
-
-[respostas A-E]
-
-Responda às 3 perguntas:
-
-1. Qual resposta é a mais forte e por quê? (Se reconhecer a sua, escolha a segunda mais forte e diga.)
-2. Qual resposta é a mais fraca e por quê?
-3. Qual ponto cego o conselho inteiro está perdendo?
-
-Seja direto. Sem preâmbulo. 200-400 palavras no total.
-```
-
-### passo 4: síntese do presidente
+### passo 3: síntese do presidente
 
 Convoque um único sub-agente como presidente. Ele recebe:
 
 1. A pergunta enquadrada
-2. As 5 respostas originais (com nomes dos conselheiros revelados — só os revisores viam anônimo)
-3. As 5 revisões por pares
+2. As 5 respostas dos conselheiros (com nomes revelados)
 
 **Template de prompt do presidente:**
 
 ```
-Você é o Presidente de um Conselho de LLMs. Sua função é sintetizar as opiniões e revisões do conselho em um veredito final claro e útil.
+Você é o Presidente de um Conselho de LLMs. Sua função é sintetizar as opiniões dos 5 conselheiros em um veredito final claro e útil.
 
 A pergunta trazida ao conselho:
 
@@ -208,9 +171,6 @@ RESPOSTAS DOS CONSELHEIROS:
 **O Executor:**
 [resposta]
 
-REVISÕES POR PARES:
-[todas as 5 revisões por pares]
-
 Produza o veredito do conselho usando esta estrutura exata:
 
 ## Onde o Conselho Concorda
@@ -219,11 +179,11 @@ Produza o veredito do conselho usando esta estrutura exata:
 ## Onde o Conselho se Choca
 [Discordâncias genuínas. Apresente os dois lados. Explique por que conselheiros razoáveis discordam.]
 
-## Pontos Cegos que o Conselho Pegou
-[Coisas que só emergiram através da revisão por pares. Coisas que conselheiros individuais perderam e que outros sinalizaram.]
+## Pontos Cegos
+[Coisas que conselheiros individuais perderam e que outros sinalizaram. Ângulos importantes que apareceram em apenas 1-2 conselheiros.]
 
 ## A Recomendação
-[Uma recomendação clara e direta. Não "depende". Uma resposta de verdade com raciocínio.]
+[Uma recomendação clara e direta. Não "depende". Uma resposta de verdade com raciocínio. O presidente PODE discordar da maioria se o raciocínio do dissidente for mais forte — explique por quê.]
 
 ## A Única Coisa a Fazer Primeiro
 [Um único próximo passo concreto. Não uma lista. Uma coisa.]
@@ -231,7 +191,7 @@ Produza o veredito do conselho usando esta estrutura exata:
 Seja direto. Não hesite. O ponto inteiro do conselho é dar ao usuário uma clareza que ele não conseguiria de uma única perspectiva.
 ```
 
-### passo 5: apresente o veredito no chat
+### passo 4: apresente o veredito no chat
 
 Depois que a síntese do presidente estiver completa, apresente o veredito completo diretamente no chat usando markdown. NÃO gere um relatório HTML nem nenhum arquivo. O usuário lê na conversa.
 
@@ -246,7 +206,7 @@ Formate o output assim:
 ### Onde o Conselho se Choca
 {conteúdo}
 
-### Pontos Cegos que o Conselho Pegou
+### Pontos Cegos
 {conteúdo}
 
 ### A Recomendação
@@ -258,7 +218,7 @@ Formate o output assim:
 
 Mantenha escaneável. Use bullet points. Inclua snippets de código com diff (antes/depois) quando o conselho for sobre código.
 
-### passo 6: salve a transcrição (opcional)
+### passo 5: salve a transcrição (opcional)
 
 Salve uma transcrição apenas se o usuário pedir ou se a pergunta for significativa o suficiente pra referenciar depois. Se salvar, escreva em `council-transcript-[timestamp].md` no diretório do projeto.
 
@@ -284,7 +244,7 @@ Salve uma transcrição apenas se o usuário pedir ou se a pergunta for signific
 
 *Onde o conselho se choca:* O Contrário diz que aulão grátis polui a lista. Os outros 4 dizem que poluição é tolerável quando a audiência ainda é fria. A divergência se resolve pelo *grau de aquecimento atual* — se a lista de 1,2K já comprou algo seu antes, vai direto pro pago. Se nunca comprou, aulão grátis primeiro.
 
-*Pontos cegos pegos:* O Pergunta-Por-Quê pegou o problema de método: ninguém definiu o critério de sucesso ANTES de escolher o formato. Sem critério ("se 200 pessoas pagarem R$ 97, eu lanço o R$ 1.997"), qualquer resultado vira interpretação.
+*Pontos cegos:* O Pergunta-Por-Quê pegou o problema de método: ninguém definiu o critério de sucesso ANTES de escolher o formato. Sem critério ("se 200 pessoas pagarem R$ 97, eu lanço o R$ 1.997"), qualquer resultado vira interpretação.
 
 *Recomendação:* Aulão grátis primeiro, depois workshop de R$ 97 pros que ficaram, depois R$ 1.997 pra quem fechou o R$ 97. MAS: antes de mexer em qualquer coisa, escreve em uma linha qual número (inscritos no grátis, conversão pro R$ 97, conversão pro R$ 1.997) autoriza ou cancela o próximo passo. Sem esse critério escrito, você vai racionalizar qualquer resultado.
 
@@ -295,8 +255,6 @@ Salve uma transcrição apenas se o usuário pedir ou se a pergunta for signific
 ## notas importantes
 
 - **Sempre convoque os 5 conselheiros em paralelo.** Convocação sequencial desperdiça tempo e deixa respostas anteriores vazarem pras posteriores.
-
-- **Sempre anonimize pra revisão por pares.** Se os revisores souberem qual conselheiro disse o quê, eles vão se curvar a certos estilos de pensamento em vez de avaliar pelo mérito.
 
 - **O presidente pode discordar da maioria.** Se 4 de 5 conselheiros disserem "faz" mas o raciocínio do 1 dissidente for o mais forte, o presidente deve ficar com o dissidente e explicar por quê.
 
@@ -312,7 +270,9 @@ Salve uma transcrição apenas se o usuário pedir ou se a pergunta for signific
 
 Os 5 conselheiros são sub-agentes que rodam o **mesmo modelo** (Claude) com prompts diferentes. A "independência" entre eles vem do prompt, não da arquitetura — não são cinco mentes diferentes, são uma mente forçada a usar cinco lentes diferentes.
 
-O valor real, portanto, NÃO é "5 mentes votam". É **anti-viés-de-confirmação estruturado**: o conselho impede a IA de convergir prematuramente numa única resposta, força a ver o problema por ângulos que ela tenderia a pular, e a revisão por pares anônima evita que o tom de um conselheiro carismático contamine os outros.
+O valor real, portanto, NÃO é "5 mentes votam". É **anti-viés-de-confirmação estruturado**: o conselho impede a IA de convergir prematuramente numa única resposta e força ver o problema por 5 ângulos que ela tenderia a pular. O presidente faz o trabalho de síntese forçada — em vez de "depende", entrega decisão sob a tensão das 5 vozes.
+
+Esta skill OMITE o passo de peer review da metodologia original do Karpathy. Razão: Karpathy usa modelos diferentes (GPT, Claude, Gemini, Grok) — peer review entre eles vale porque cada modelo tem viés distinto. Aqui usamos um modelo só (Claude) com 5 prompts diferentes; peer review entre prompts do mesmo modelo é teatro epistêmico (todos compartilham o viés latente do Claude), e custa 5 sub-agentes a mais sem entregar diversidade real. Foi removido conscientemente.
 
 Use o conselho com essa expectativa: ferramenta pra estressar uma decisão antes de cravar. Não é oráculo. É processo.
 
@@ -320,4 +280,4 @@ Use o conselho com essa expectativa: ferramenta pra estressar uma decisão antes
 
 ## inspiração
 
-A metodologia "LLM Council" original é do Andrej Karpathy ([github.com/karpathy/llm-council](https://github.com/karpathy/llm-council)) — múltiplos modelos respondem em paralelo, peer review anônima, presidente sintetiza. Esta skill aplica o mesmo padrão dentro do Claude usando sub-agentes com lentes de pensamento distintas no lugar de modelos diferentes.
+A metodologia "LLM Council" original é do Andrej Karpathy ([github.com/karpathy/llm-council](https://github.com/karpathy/llm-council)) — múltiplos modelos diferentes respondem em paralelo, fazem peer review anônima, e um presidente sintetiza. Esta skill aplica uma adaptação dentro do Claude: usa sub-agentes com lentes de pensamento distintas no lugar de modelos diferentes, e omite o passo de peer review pelas razões explicadas na seção "como funciona por dentro" acima.

@@ -2,11 +2,11 @@
 
 Skill do Claude Code que transforma uma pergunta, decisão ou artefato em **cinco perspectivas independentes + revisão por pares + veredito final**.
 
-> **Versão:** 1.3.0
+> **Versão:** 2.0.0
 
 ## O que é
 
-Quando você pergunta uma coisa pra IA, recebe uma resposta. Pode ser ótima, pode ser mediana — você não sabe, porque viu uma só. O Conselho convoca cinco conselheiros com estilos de pensamento distintos, faz peer review anônima entre eles, e um presidente sintetiza. O resultado é um veredito que mostra onde há convergência (alta confiança), onde há choque (decisão real), pontos cegos pegos pelo grupo, e a única coisa pra fazer primeiro.
+Quando você pergunta uma coisa pra IA, recebe uma resposta. Pode ser ótima, pode ser mediana — você não sabe, porque viu uma só. O Conselho convoca cinco conselheiros com estilos de pensamento distintos pra responderem em paralelo, e um presidente sintetiza num veredito final. O resultado mostra onde há convergência (alta confiança), onde há choque (decisão real), pontos cegos do grupo, e a única coisa pra fazer primeiro.
 
 Funciona pra qualquer coisa em que estar errado custa caro: contratar ou esperar, lançar ou validar antes, refatorar agora ou depois, demitir ou dar mais 3 meses, mudar pricing, escolher fornecedor, revisar copy, aprovar arquitetura.
 
@@ -30,15 +30,15 @@ Se você ainda não tem: instale primeiro seguindo https://docs.claude.com/en/do
 
 ### 2. Plano do Claude Code
 
-Cada convocação dispara cerca de **11 sub-agentes** (5 conselheiros + 5 revisores + 1 presidente). Tradução prática:
+Cada convocação dispara **6 sub-agentes** (5 conselheiros + 1 presidente). Tradução prática:
 
 | Plano | Quantas convocações por dia |
 |---|---|
-| **Free** | Inviável — estoura nas primeiras 1-2 |
-| **Pro** | 2-5 antes de bater rate limit |
-| **Max** | Recomendado pra uso recorrente |
+| **Free** | 1-2 antes de bater rate limit |
+| **Pro** | 4-10 convocações |
+| **Max** | Sem preocupação prática |
 
-Se você tem Pro, use só pra decisões reais — não pra cada dúvida do dia.
+Da v1 pra v2 cortamos o passo de peer review entre conselheiros. Razão: Karpathy original usa modelos diferentes pra obter peer review legítimo (cada modelo tem viés distinto). Aqui rodamos um modelo só (Claude) com 5 prompts — peer review entre prompts do mesmo modelo é teatro epistêmico (todos compartilham o viés latente do Claude). O presidente continua sintetizando, que é o passo que entrega valor real: decisão sob tensão das 5 vozes.
 
 ---
 
@@ -126,7 +126,7 @@ Cole isso no Claude Code pra ver o conselho funcionando pela primeira vez:
 convoca o conselho: devo lançar workshop pago de R$ 97 ou aulão grátis pra construir lista? Audiência de 8K, lista de 1,2K. Objetivo: testar produto de R$ 1.997.
 ```
 
-Vai demorar 1-3 minutos. Você verá o Claude convocar 5 conselheiros, depois 5 revisores, depois um presidente. No final, um veredito estruturado em markdown com onde concordam, onde se chocam, recomendação e única coisa pra fazer primeiro.
+Vai demorar 1-2 minutos. Você verá o Claude convocar 5 conselheiros em paralelo e depois um presidente. No final, um veredito estruturado em markdown com onde concordam, onde se chocam, recomendação e única coisa pra fazer primeiro.
 
 Se isso funcionou, está tudo certo.
 
@@ -144,7 +144,7 @@ Diga uma das frases-gatilho seguida da sua pergunta ou contexto:
 
 ### Como enquadrar a pergunta pra ter veredito útil
 
-Sua pergunta puxa 11 sub-agentes — vale gastar 30 segundos enquadrando ela bem. Use este modelo:
+Sua pergunta puxa 6 sub-agentes — vale gastar 30 segundos enquadrando ela bem. Use este modelo:
 
 ```
 convoca o conselho: <pergunta principal>
@@ -214,7 +214,7 @@ Pergunta vaga ("devo contratar?") gera veredito vago. Pergunta enquadrada gera d
 
 Os 5 conselheiros rodam o mesmo modelo (Claude) com prompts diferentes — não são 5 mentes independentes, é uma mente forçada a usar 5 lentes. O valor é **anti-viés-de-confirmação estruturado**, não "votação de cinco oráculos". Use com essa expectativa.
 
-A peer review anônima é o mecanismo que faz a diferença vs. um simples "me dê 5 perspectivas e debata": ela impede que o conselheiro mais "convincente" arraste os outros pro tom dele.
+O presidente é o mecanismo que faz a diferença vs. um simples "me dê 5 perspectivas e debata": ele força síntese e decisão sob a tensão das 5 vozes, em vez de produzir 5 textos longos pro empresário ler e decidir sozinho.
 
 ## Inspiração
 
