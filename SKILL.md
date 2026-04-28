@@ -1,6 +1,7 @@
 ---
 name: llm-council
-description: "Passa qualquer pergunta, decisão, código ou ideia por um conselho de 5 conselheiros que analisam de forma independente, fazem revisão por pares anonimamente, e sintetizam um veredito final. Funciona pra decisões estratégicas, revisão de código, arquitetura, copy, posicionamento — qualquer coisa em que estar errado custa caro. GATILHOS OBRIGATÓRIOS (PT-BR): 'convoca o conselho', 'roda o conselho', 'leva pro conselho', 'submete ao conselho', 'war room isto', 'stress-test isto', 'pressure-test isto', 'debate isto', 'revisa em conselho', 'conselho desse código'. GATILHOS OBRIGATÓRIOS (inglês): 'council this', 'run the council', 'war room this', 'pressure-test this', 'stress-test this', 'debate this'. GATILHOS FORTES (use quando combinados com uma decisão real ou tradeoff): 'devo fazer X ou Y', 'qual opção', 'o que você faria', 'é a jogada certa', 'valida isso', 'me dá várias perspectivas', 'não consigo decidir', 'estou dividido entre', 'revisa esse código', 'esse código tá bom', 'algum problema nessa arquitetura', 'should I X or Y', 'which option', 'what would you do', 'is this the right move', 'validate this', 'get multiple perspectives'. NÃO dispare em perguntas simples de sim/não, buscas factuais, ou 'devo X' casual sem tradeoff relevante. DISPARE quando o usuário apresenta uma decisão genuína com algo em jogo, múltiplas opções, ou um artefato (código, copy, arquitetura, plano) que merece pressão de vários ângulos."
+version: 1.0.0
+description: "Passa qualquer pergunta, decisão, código ou ideia por um conselho de 5 conselheiros que analisam de forma independente, fazem revisão por pares anonimamente, e sintetizam um veredito final. Funciona pra decisões estratégicas, revisão de código, arquitetura, copy, posicionamento — qualquer coisa em que estar errado custa caro. CUSTO: cada convocação dispara ~11 sub-agentes (5 conselheiros + 5 revisores + 1 presidente). No plano Pro do Claude Code, espera 2-5 convocações antes de bater rate limit. Plano Max recomendado pra uso recorrente. GATILHOS OBRIGATÓRIOS (PT-BR): 'convoca o conselho', 'roda o conselho', 'leva pro conselho', 'submete ao conselho', 'debate isto', 'revisa em conselho', 'conselho desse código'. GATILHOS OBRIGATÓRIOS (inglês): 'council this', 'run the council', 'debate this'. GATILHOS FORTES (use quando combinados com uma decisão real ou tradeoff): 'devo fazer X ou Y', 'qual opção', 'o que você faria', 'é a jogada certa', 'me dá várias perspectivas', 'não consigo decidir', 'estou dividido entre', 'revisa esse código', 'algum problema nessa arquitetura', 'should I X or Y', 'which option', 'what would you do', 'is this the right move', 'get multiple perspectives'. NÃO dispare em perguntas casuais como 'valida esse título', 'devo usar markdown', 'tá bom esse texto?' — esses são contextos de baixo risco e o conselho é overhead. DISPARE quando o usuário apresenta uma decisão genuína com algo em jogo, múltiplas opções, ou um artefato (código, copy, arquitetura, plano) que merece pressão de vários ângulos."
 ---
 
 # Conselho de LLMs
@@ -49,9 +50,9 @@ Procura ativamente o que está errado, o que está faltando, o que vai falhar. A
 
 **Em código:** procura race conditions, edge cases não cobertos, vetores de injeção, falhas silenciosas, dependências frágeis.
 
-### 2. O Pensador de Primeiros Princípios
+### 2. O Pergunta-Por-Quê
 
-Ignora a pergunta de superfície e pergunta "o que estamos realmente tentando resolver aqui?". Tira as suposições. Reconstrói o problema do zero. Às vezes o output mais valioso do conselho é o Pensador de Primeiros Princípios dizendo "você está fazendo a pergunta errada por completo."
+Ignora a pergunta de superfície e pergunta "o que estamos realmente tentando resolver aqui?". Tira as suposições. Reconstrói o problema do zero. Às vezes o output mais valioso do conselho é o Pergunta-Por-Quê dizendo "você está fazendo a pergunta errada por completo."
 
 **Em código:** questiona a abstração. "Por que essa classe existe? Resolve um problema real ou é cerimônia?". Reconstrói o módulo no nível mais simples possível.
 
@@ -73,7 +74,7 @@ Só liga pra uma coisa: isso pode ser feito de fato, e qual é o caminho mais r�
 
 **Em código:** quer enviar incremental. "Esse PR tá grande demais — quebra em 3. Esse refactor pode esperar, primeiro faz funcionar."
 
-**Por que esses cinco:** Eles criam três tensões naturais. Contrário vs Expansionista (downside vs upside). Primeiros Princípios vs Executor (repensar tudo vs simplesmente fazer). O Forasteiro fica no meio mantendo todo mundo honesto, vendo o que olhos novos veem. As tensões são o produto — não as respostas individuais.
+**Por que esses cinco:** Eles criam três tensões naturais. Contrário vs Expansionista (downside vs upside). Pergunta-Por-Quê vs Executor (repensar tudo vs simplesmente fazer). O Forasteiro fica no meio mantendo todo mundo honesto, vendo o que olhos novos veem. As tensões são o produto — não as respostas individuais.
 
 ---
 
@@ -195,7 +196,7 @@ RESPOSTAS DOS CONSELHEIROS:
 **O Contrário:**
 [resposta]
 
-**O Pensador de Primeiros Princípios:**
+**O Pergunta-Por-Quê:**
 [resposta]
 
 **O Expansionista:**
@@ -263,31 +264,31 @@ Salve uma transcrição apenas se o usuário pedir ou se a pergunta for signific
 
 ---
 
-## exemplo: convocando o conselho sobre uma revisão de arquitetura
+## exemplo: convocando o conselho sobre uma decisão de produto
 
-**Usuário:** "Convoca o conselho: tô prestes a separar o serviço de billing do monolito principal pra um microserviço próprio. Time de 4 devs, ~200K usuários, billing tem ~3K linhas hoje. É a hora certa?"
+**Usuário:** "Convoca o conselho: tô em dúvida entre lançar um workshop pago de R$ 97 ou um aulão grátis pra construir lista. Minha audiência tem ~8K seguidores no Instagram, lista de e-mail de 1,2K. Objetivo: testar um novo produto de R$ 1.997. Qual jogada faz mais sentido?"
 
-**O Contrário:** "Microserviço a 4 devs é receita pra desastre. Você vai herdar latência de rede, complexidade de transações distribuídas, observabilidade fragmentada e duas pipelines de deploy. Billing é exatamente o lugar onde inconsistência custa dinheiro real. Toda história de microserviço prematuro começa com 'parecia faz sentido na época'..."
+**O Contrário:** "Aulão grátis pra 8K seguidores parece de graça, mas custa caro. Você vai atrair curiosos que nunca compram, vai inflar lista com gente que abriu pelo isca, e a métrica de conversão pro produto de R$ 1.997 vai vir baixa porque o público não pagou nem R$ 97 pra entrar. Workshop pago filtra: quem paga R$ 97 demonstra disposição. Lista pequena de pagantes converte mais que lista grande de curiosos. O risco do grátis é parecer movimento sem virar receita."
 
-**O Pensador de Primeiros Princípios:** "Qual é a dor concreta que justifica a separação? Tempo de build? Time crescendo e querendo deploy independente? Picos de carga isolados? Se a resposta for 'eu li que é boa prática', você está respondendo a pergunta errada. Modular o billing dentro do monolito (boundary forte, package separado, sem nenhum import cruzado) entrega 80% do benefício com 5% do custo..."
+**O Pergunta-Por-Quê:** "Você está validando o quê exatamente? Demanda pelo conteúdo, ou disposição a pagar? Se é demanda, o grátis serve melhor (mais volume = sinal mais limpo). Se é disposição a pagar, o workshop de R$ 97 é o teste real — só faz sentido lançar o R$ 1.997 se gente paga R$ 97. A pergunta certa não é 'qual lançar', é 'que sinal eu preciso ver agora pra autorizar o R$ 1.997?'. Sem isso definido, qualquer escolha vira teatro de validação."
 
-**O Expansionista:** "Se você fizer isso bem, billing vira o template de como separar os próximos serviços. O contrato fica claro, observabilidade ganha primeira classe, e você pode reusar o billing pra um produto adjacente (ex: API de cobrança como produto). Mas só se você fizer DIREITO. Mal feito, vira lastro."
+**O Expansionista:** "Faz os dois — sequenciais. Aulão grátis primeiro pra puxar 800-1500 inscritos da audiência atual. Termina o aulão com oferta do workshop de R$ 97. Quem paga vira público pré-qualificado pro R$ 1.997 daqui a 60 dias. Funil de 3 níveis ataca curiosos, mornos e prontos no mesmo cohort. O caro é descartar 80% do funil indo direto pro pago — o grátis é a porta que multiplica o pipeline."
 
-**O Forasteiro:** "Não sei o que tem hoje no monolito. 3K linhas de billing é pouco. 200K usuários é um número médio. Por que separar JUSTAMENTE billing? Por que não auth, ou notificações? Sua justificativa precisa explicar 'por que billing primeiro' antes de 'por que microserviço'."
+**O Forasteiro:** "Eu não te conheço. Vejo um anúncio de R$ 97 pra workshop seu — não compro porque não sei se você entrega valor. Vejo um aulão grátis com promessa concreta — entro porque é zero risco. Saio do aulão tendo experimentado seu jeito. Aí seu R$ 1.997 vira possível porque eu já consumi e gostei. A barreira do R$ 97 é alta pra alguém que ainda não tem prova. Lembra que você está visível pra 8K — só uns 200 te conhecem de verdade."
 
-**O Executor:** "Antes de separar serviço, separa o módulo. Cria pasta `billing/` com boundary forte, sem imports cruzados, deploy ainda junto. 1 sprint. Se isso já dói (alguém vai lá e quebra a parede), o problema é cultural, não arquitetural — e microserviço não resolve. Se não dói, você ganhou 80% do valor sem o overhead. Microserviço é passo 3, não passo 1."
+**O Executor:** "Anuncia o aulão grátis pra semana que vem. 7 dias pra criar landing simples, sequência de 3 e-mails, conteúdo do aulão. Workshop pago precisa de mais infraestrutura (página de venda, recibo, suporte, garantia). Você ganha 30 dias entre validar o aulão e lançar o pago — usando o resultado do aulão como termômetro pra ajustar o pago. Se 8K seguidores virarem 1K inscritos no grátis, segue pro pago. Se virarem 200, o problema é audiência, não preço."
 
 **Veredito do Presidente:**
 
-*Onde o conselho concorda:* Modularizar o billing primeiro (boundary forte dentro do monolito) é o passo certo. Quase todos os conselheiros chegaram nisso por caminhos diferentes.
+*Onde o conselho concorda:* Sequenciar (grátis primeiro, pago depois) é a jogada com melhor relação informação/custo. 4 dos 5 chegaram nisso por caminhos diferentes.
 
-*Onde o conselho se choca:* O Expansionista vê valor estratégico em separar agora (template + reuso futuro). Os outros 4 dizem que isso é prematuro pra um time de 4 devs. A divergência depende de quanto a Expert valoriza opcionalidade futura vs custo de complexidade hoje.
+*Onde o conselho se choca:* O Contrário diz que aulão grátis polui a lista. Os outros 4 dizem que poluição é tolerável quando a audiência ainda é fria. A divergência se resolve pelo *grau de aquecimento atual* — se a lista de 1,2K já comprou algo seu antes, vai direto pro pago. Se nunca comprou, aulão grátis primeiro.
 
-*Pontos cegos pegos:* O Forasteiro pegou que ninguém justificou "por que billing primeiro". Se a resposta não for óbvia (ex: deploy independente é necessário pra compliance, ou time de billing existe e quer autonomia), a escolha do domínio pra extrair é arbitrária e sintomática de cargo cult.
+*Pontos cegos pegos:* O Pergunta-Por-Quê pegou o problema de método: ninguém definiu o critério de sucesso ANTES de escolher o formato. Sem critério ("se 200 pessoas pagarem R$ 97, eu lanço o R$ 1.997"), qualquer resultado vira interpretação.
 
-*Recomendação:* Não separe ainda. Modularize dentro do monolito. Reavalie em 6 meses, com critério explícito de quando puxar o gatilho (ex: "quando billing precisar de SLA diferente do resto", "quando time crescer pra 8+ devs com squad dedicado"). Se a modularização sozinha resolver, ótimo — você economizou meses.
+*Recomendação:* Aulão grátis primeiro, depois workshop de R$ 97 pros que ficaram, depois R$ 1.997 pra quem fechou o R$ 97. MAS: antes de mexer em qualquer coisa, escreve em uma linha qual número (inscritos no grátis, conversão pro R$ 97, conversão pro R$ 1.997) autoriza ou cancela o próximo passo. Sem esse critério escrito, você vai racionalizar qualquer resultado.
 
-*Única coisa a fazer primeiro:* Crie a pasta `billing/` com boundary forte, regra de lint que bloqueia imports cruzados, e um teste de arquitetura que falha se alguém violar. Sem mexer em deploy ainda.
+*Única coisa a fazer primeiro:* Escrever em uma linha: "se ___ pessoas pagarem R$ 97 dentro de 7 dias após o aulão, lanço o R$ 1.997". Decidir o número antes de rodar a campanha. Sem isso, qualquer resultado vai parecer aceitável.
 
 ---
 
