@@ -70,7 +70,7 @@ Depois desse passo você tem uma pasta com o `SKILL.md` dentro.
 
 ```powershell
 # 1. Vá até a pasta onde você descompactou (ajuste se baixou em outro lugar)
-cd "$env:USERPROFILE\Downloads\llm-council-main"
+cd "$env:USERPROFILE\Downloads\conselho-main"
 
 # 2. Cria a pasta da skill (não erra se já existe)
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\llm-council" | Out-Null
@@ -90,7 +90,7 @@ Get-Item "$env:USERPROFILE\.claude\skills\llm-council\SKILL.md"
 
 ```bash
 # 1. Vá até a pasta onde você descompactou (ajuste se baixou em outro lugar)
-cd ~/Downloads/llm-council-main
+cd ~/Downloads/conselho-main
 
 # 2. Cria a pasta + copia o SKILL.md
 mkdir -p ~/.claude/skills/llm-council
