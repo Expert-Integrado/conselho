@@ -2,7 +2,7 @@
 
 Skill do Claude Code que transforma uma pergunta, decisão ou artefato em **cinco perspectivas independentes + revisão por pares + veredito final**.
 
-> **Versão:** 1.2.0
+> **Versão:** 1.3.0
 
 ## O que é
 
@@ -82,7 +82,15 @@ Copy-Item -Path ".\SKILL.md" -Destination "$env:USERPROFILE\.claude\skills\llm-c
 Get-Item "$env:USERPROFILE\.claude\skills\llm-council\SKILL.md"
 ```
 
-> **Atenção OneDrive:** se sua pasta de usuário está sendo redirecionada pelo OneDrive corporativo, o comando pode salvar em `OneDrive\.claude` em vez de `.claude` — e o Claude Code não lê de lá. Sintoma: skill não aparece em `/help` mesmo após instalar. Solução: pause sincronização do OneDrive antes ou rode `cd $HOME\.claude` antes — se cair em OneDrive, mova manualmente pra `C:\Users\SEU_USUARIO\.claude`.
+> **Atenção OneDrive (corporativo ou pessoal):** se sua pasta de usuário está sendo redirecionada pelo OneDrive, o comando pode salvar em `OneDrive\.claude` em vez de `.claude` — e o Claude Code não lê de lá. Sintoma: skill não aparece em `/help` mesmo após instalar.
+>
+> **Como pausar a sincronização do OneDrive (1 min):**
+> 1. Encontre o ícone azul de nuvem na bandeja do sistema (perto do relógio, canto inferior direito). Pode estar dentro do "^" — clique pra expandir.
+> 2. Clique no ícone → ⚙️ engrenagem (Configurações/Help) → "Pausar sincronização" → escolha "2 horas".
+> 3. Rode os comandos da skill, reinicie o Claude Code, confirme em `/help`.
+> 4. Pode reativar OneDrive depois — a pasta `.claude` já estará criada no lugar certo.
+>
+> Se mesmo assim a pasta foi pra dentro do OneDrive: rode `Test-Path "$env:USERPROFILE\OneDrive\.claude\skills\llm-council\SKILL.md"` no PowerShell. Se retornar `True`, mova manualmente: clique-direito → recortar → cole em `C:\Users\SEU_USUARIO\.claude\skills\llm-council\` (cria a pasta se não existir).
 
 #### 🍎 macOS / 🐧 Linux
 
@@ -134,6 +142,32 @@ Diga uma das frases-gatilho seguida da sua pergunta ou contexto:
 - `debate isso: <decisão>`
 - `council this: <question>`
 
+### Como enquadrar a pergunta pra ter veredito útil
+
+Sua pergunta puxa 11 sub-agentes — vale gastar 30 segundos enquadrando ela bem. Use este modelo:
+
+```
+convoca o conselho: <pergunta principal>
+
+Contexto: <2-4 linhas sobre seu negócio, momento, números relevantes>
+Opções na mesa: <A, B, C — sem juízo, só liste>
+O que está em jogo: <o que você ganha se acertar e perde se errar>
+Restrições: <orçamento, prazo, time, contratos, qualquer coisa que limita>
+```
+
+Exemplo bem enquadrado:
+
+```
+convoca o conselho: contrato mais um vendedor agora ou espero 6 meses?
+
+Contexto: empresa de SaaS B2B, MRR R$ 80K, time atual 2 vendedores entregando 6 reuniões/dia, ticket médio R$ 4K, conversão 18%.
+Opções: (A) contratar júnior agora — custo R$ 5K/mês + 3 meses pra rampar, (B) esperar 6 meses pra consolidar processos com o time atual.
+O que está em jogo: se contrato cedo e processo não tá maduro, queimo CAC e o cara vai embora frustrado. Se espero demais, perco janela competitiva.
+Restrições: caixa pra 12 meses no atual ritmo. Não tenho head de vendas ainda.
+```
+
+Pergunta vaga ("devo contratar?") gera veredito vago. Pergunta enquadrada gera diagnóstico cirúrgico.
+
 ### Exemplos do mundo real
 
 - **Decisão de produto:** "convoca o conselho: devo lançar workshop pago de R$ 97 ou aulão grátis?"
@@ -158,7 +192,7 @@ Diga uma das frases-gatilho seguida da sua pergunta ou contexto:
 | Sintoma | O que tentar |
 |---|---|
 | **Skill não aparece em `/help`** | Verifique o caminho exato: tem que ser `~/.claude/skills/llm-council/SKILL.md` (Windows: `C:\Users\SEU_USUARIO\.claude\skills\llm-council\SKILL.md`). Reinicie o Claude Code. Se está no OneDrive, mova pra fora. |
-| **`Cannot find path '.\SKILL.md'`** | Você não fez `cd` pra dentro da pasta descompactada. Veja onde está o arquivo (ex: `Downloads\llm-council-main\`) e rode `cd` pra lá antes do Copy-Item. |
+| **`Cannot find path '.\SKILL.md'`** | Você não fez `cd` pra dentro da pasta descompactada, ou descompactou em outro lugar. Substitua `Downloads` pelo caminho real onde está o arquivo. Exemplos: descompactou no Desktop → `cd "$env:USERPROFILE\Desktop\conselho-main"`; em Documentos → `cd "$env:USERPROFILE\Documents\conselho-main"`; ou clique com botão direito no arquivo `SKILL.md` → "Copiar como caminho" pra ver o path completo. |
 | **PowerShell: `cannot be loaded because running scripts is disabled`** | Os comandos deste README NÃO precisam mudar essa política — usam só built-ins (`New-Item`, `Copy-Item`). Se mesmo assim travar, abra PowerShell como administrador e rode `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. |
 | **`mkdir: command not found` (Windows)** | Você está no `cmd.exe`, não no PowerShell. Abra PowerShell (tecla Windows → digite "PowerShell"). |
 | **Defender / SmartScreen bloqueia o ZIP** | Clique em "Mais informações" → "Executar mesmo assim". O ZIP só contém arquivos de texto (SKILL.md + README.md). |
