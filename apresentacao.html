@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Conselho de LLMs — Expert Integrado</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #0f1419; color: #e8eaed; }
+  body { display: flex; align-items: center; justify-content: center; }
+  .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+  .slide { position: absolute; inset: 0; padding: 6vh 8vw; display: none; flex-direction: column; justify-content: center; opacity: 0; transition: opacity .35s ease; }
+  .slide.active { display: flex; opacity: 1; }
+  .slide h1 { font-size: clamp(36px, 5.4vw, 76px); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 24px; }
+  .slide h2 { font-size: clamp(28px, 3.6vw, 48px); font-weight: 700; line-height: 1.1; letter-spacing: -0.015em; margin-bottom: 18px; color: #6ee7b7; }
+  .slide h3 { font-size: clamp(20px, 2.4vw, 30px); font-weight: 600; line-height: 1.2; margin-bottom: 12px; color: #fbbf24; }
+  .slide p { font-size: clamp(16px, 1.6vw, 22px); line-height: 1.55; margin-bottom: 14px; max-width: 1100px; color: #cbd5e1; }
+  .slide p strong { color: #ffffff; font-weight: 700; }
+  .slide ul { list-style: none; margin-top: 12px; }
+  .slide li { font-size: clamp(15px, 1.5vw, 20px); line-height: 1.55; margin-bottom: 10px; padding-left: 26px; position: relative; color: #cbd5e1; max-width: 1100px; }
+  .slide li::before { content: "▸"; position: absolute; left: 0; color: #6ee7b7; font-weight: 700; }
+  .slide li strong { color: #ffffff; font-weight: 700; }
+  .subtitle { font-size: clamp(20px, 2.2vw, 30px); color: #94a3b8; margin-bottom: 32px; line-height: 1.35; }
+  .credit { font-size: clamp(13px, 1.1vw, 17px); color: #64748b; line-height: 1.5; max-width: 800px; border-left: 3px solid #6ee7b7; padding: 12px 18px; margin-top: 28px; }
+  .credit strong { color: #cbd5e1; }
+  .pill { display: inline-block; background: rgba(110, 231, 183, .12); color: #6ee7b7; font-size: clamp(11px, 1vw, 14px); font-weight: 600; padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .funnel { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 24px 0; flex-wrap: wrap; }
+  .conselheiro { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 130px; max-width: 160px; }
+  .conselheiro .icon { width: 64px; height: 64px; background: rgba(110, 231, 183, .1); border: 2px solid rgba(110, 231, 183, .35); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #6ee7b7; }
+  .conselheiro .icon svg { width: 36px; height: 36px; }
+  .conselheiro .nome { font-size: clamp(13px, 1.1vw, 17px); font-weight: 700; color: #ffffff; text-align: center; line-height: 1.2; }
+  .conselheiro .papel { font-size: clamp(11px, .95vw, 14px); color: #94a3b8; text-align: center; line-height: 1.3; }
+  .arrow { color: #475569; font-size: 24px; }
+  .presidente { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 130px; max-width: 160px; }
+  .presidente .icon { width: 76px; height: 76px; background: rgba(251, 191, 36, .15); border: 2px solid rgba(251, 191, 36, .5); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fbbf24; }
+  .presidente .icon svg { width: 44px; height: 44px; }
+  .presidente .nome { font-size: clamp(14px, 1.2vw, 18px); font-weight: 800; color: #fbbf24; text-align: center; line-height: 1.2; }
+  .presidente .papel { font-size: clamp(11px, .95vw, 14px); color: #cbd5e1; text-align: center; line-height: 1.3; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 18px; max-width: 1100px; }
+  .card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 18px 22px; }
+  .card h3 { color: #6ee7b7; font-size: clamp(15px, 1.3vw, 19px); margin-bottom: 6px; }
+  .card p { font-size: clamp(14px, 1.2vw, 17px); color: #94a3b8; margin-bottom: 0; line-height: 1.45; }
+  .step { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 14px; max-width: 1000px; }
+  .step .num { background: #6ee7b7; color: #0f1419; font-weight: 800; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
+  .step .text { font-size: clamp(15px, 1.5vw, 20px); color: #cbd5e1; line-height: 1.5; padding-top: 4px; }
+  .step .text strong { color: #ffffff; }
+  .link { color: #6ee7b7; text-decoration: none; border-bottom: 1px dashed rgba(110, 231, 183, .5); }
+  .link:hover { border-bottom-style: solid; }
+  .big-link { display: inline-block; font-size: clamp(20px, 2.5vw, 32px); color: #6ee7b7; font-weight: 700; padding: 18px 32px; background: rgba(110, 231, 183, .08); border: 2px solid rgba(110, 231, 183, .35); border-radius: 12px; margin-top: 18px; text-decoration: none; }
+  .nav { position: fixed; bottom: 24px; right: 32px; display: flex; gap: 12px; z-index: 100; align-items: center; }
+  .nav button { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #cbd5e1; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: background .2s; }
+  .nav button:hover { background: rgba(255,255,255,.12); }
+  .counter { color: #64748b; font-size: 13px; min-width: 60px; text-align: center; }
+  .footer-brand { position: fixed; bottom: 24px; left: 32px; color: #475569; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; z-index: 100; }
+  .quote { font-size: clamp(20px, 2.2vw, 30px); font-style: italic; color: #fbbf24; line-height: 1.4; max-width: 1000px; padding: 20px 0; border-top: 1px solid rgba(251, 191, 36, .25); border-bottom: 1px solid rgba(251, 191, 36, .25); margin: 24px 0; }
+  .takeaways { display: flex; flex-direction: column; gap: 18px; max-width: 1100px; margin-top: 18px; }
+  .takeaway { display: flex; gap: 18px; align-items: flex-start; padding: 16px 20px; background: rgba(110, 231, 183, .05); border-left: 4px solid #6ee7b7; border-radius: 6px; }
+  .takeaway-num { font-size: clamp(28px, 3vw, 40px); font-weight: 800; color: #6ee7b7; line-height: 1; flex-shrink: 0; }
+  .takeaway-text { font-size: clamp(15px, 1.5vw, 20px); color: #cbd5e1; line-height: 1.45; }
+  .takeaway-text strong { color: #ffffff; }
+  code { font-family: "SF Mono", Monaco, "Cascadia Code", monospace; background: rgba(255,255,255,.08); padding: 2px 8px; border-radius: 4px; font-size: 0.9em; color: #fbbf24; }
+  .progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.05); z-index: 100; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, #6ee7b7, #fbbf24); transition: width .35s ease; }
+</style>
+</head>
+<body>
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+<div class="deck" id="deck">
+
+  <!-- 1. CAPA -->
+  <section class="slide active">
+    <div class="pill">Aula rápida · 5 min</div>
+    <h1>Conselho de LLMs</h1>
+    <p class="subtitle">Como decidir com IA quando estar errado custa caro — sem deixar a IA concordar com você o tempo todo.</p>
+    <div class="credit">
+      <strong>Metodologia adaptada do LLM Council de Andrej Karpathy</strong> (ex-Tesla, OpenAI — <a class="link" href="https://github.com/karpathy/llm-council">github.com/karpathy/llm-council</a>). Adaptação Expert Integrado. Apresentado por <strong>Eric Luciano</strong>.
+    </div>
+  </section>
+
+  <!-- 2. PROBLEMA: IA é sycophant -->
+  <section class="slide">
+    <div class="pill">O Problema</div>
+    <h2>A IA tende a concordar com você</h2>
+    <p>Você pergunta uma coisa. Recebe uma resposta. Pode ser ótima, pode ser mediana — você não sabe, porque viu uma só.</p>
+    <p>E pior: <strong>treinaram a IA pra ser agradável</strong>. Pra ser educada. Pra "ajudar". O nome técnico é <em>sycophancy</em>.</p>
+    <h3 style="margin-top: 30px;">Quando você joga uma decisão importante na IA, ela costuma:</h3>
+    <ul>
+      <li><strong>Validar sua hipótese</strong> mesmo que seja ruim</li>
+      <li><strong>Esconder os contras</strong> pra não te frustrar</li>
+      <li><strong>Repetir suas próprias palavras</strong> de volta com mais confiança</li>
+    </ul>
+    <p style="margin-top: 24px; color: #fbbf24;"><strong>Resultado:</strong> falsa segurança numa decisão que merecia mais pressão.</p>
+  </section>
+
+  <!-- 3. SOLUÇÃO: pesquisa estruturada -->
+  <section class="slide">
+    <div class="pill">A Solução</div>
+    <h2>Pesquisar antes de decidir</h2>
+    <p>Antes de criar conteúdo, fazer lançamento, contratar, refatorar código — você <strong>pesquisa</strong>. Não confia na primeira ideia. Cruza fontes.</p>
+    <p>Com IA tem que ser igual.</p>
+    <div class="quote">"Uma IA respondendo é uma fonte. Pra decisões caras, não basta."</div>
+    <p>A solução: <strong>forçar a IA a discordar de si mesma</strong>. Convocar várias perspectivas no mesmo problema, cada uma defendendo um ângulo distinto. Forçar tensão. Pegar pontos cegos.</p>
+    <p style="color: #6ee7b7;">Isso é o <strong>Conselho de LLMs</strong>.</p>
+  </section>
+
+  <!-- 4. POR QUE SUB-AGENTS -->
+  <section class="slide">
+    <div class="pill">Por que sub-agents</div>
+    <h2>5 instâncias separadas, não 1 com 5 papéis</h2>
+    <p>Quando você pede pra IA "responder de 5 ângulos", ela <strong>compromete</strong> — mistura tudo numa resposta amorna. Vira o famoso "depende".</p>
+    <p>Quando você cria <strong>sub-agents</strong> — instâncias separadas, cada uma com SEU papel atribuído — cada uma se compromete totalmente com o ângulo dela. Sem hesitar. Sem ser equilibrada.</p>
+    <p>No final, um <strong>Presidente</strong> sintetiza as 5 respostas conflitantes num veredito acionável. A síntese é forçada — ele tem que dar uma resposta, não fugir pra "depende".</p>
+    <p style="color: #6ee7b7; margin-top: 24px;"><strong>Resultado:</strong> 5x mais ângulos, sem o efeito amornador. 1 página final pra você ler e agir.</p>
+  </section>
+
+  <!-- 5. OS 5 CONSELHEIROS — funil -->
+  <section class="slide">
+    <div class="pill">Os 5 Conselheiros</div>
+    <h2>5 lentes de pensamento</h2>
+    <div class="funnel">
+      <div class="conselheiro">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+        <div class="nome">O Contrário</div>
+        <div class="papel">Acha o que vai falhar</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="conselheiro">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="10"/></svg></div>
+        <div class="nome">O Pergunta-Por-Quê</div>
+        <div class="papel">Tira premissas</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="conselheiro">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="nome">O Expansionista</div>
+        <div class="papel">Vê o upside</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="conselheiro">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="nome">O Forasteiro</div>
+        <div class="papel">Olhos novos</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="conselheiro">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="nome">O Executor</div>
+        <div class="papel">O que faz segunda</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="presidente">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22a8 8 0 0116 0"/><circle cx="10" cy="8" r="5"/><path d="M22 11l-3-3-2 2"/></svg></div>
+        <div class="nome">O Presidente</div>
+        <div class="papel">Sintetiza num veredito</div>
+      </div>
+    </div>
+    <p style="text-align: center; margin-top: 26px; color: #94a3b8;">Os 5 são <strong>lentes de pensamento</strong>, não cargos. Funcionam pra qualquer decisão.</p>
+  </section>
+
+  <!-- 6. COMO FUNCIONA -->
+  <section class="slide">
+    <div class="pill">Como Funciona</div>
+    <h2>4 passos. 1-2 minutos.</h2>
+    <div class="step"><div class="num">1</div><div class="text">Você pergunta: <code>convoca o conselho: devo fazer X ou Y?</code></div></div>
+    <div class="step"><div class="num">2</div><div class="text"><strong>5 conselheiros respondem em paralelo</strong> — cada um do seu ângulo, sem ver os outros</div></div>
+    <div class="step"><div class="num">3</div><div class="text"><strong>O Presidente sintetiza</strong> — gera veredito estruturado: onde concordam, onde se chocam, recomendação, única coisa pra fazer primeiro</div></div>
+    <div class="step"><div class="num">4</div><div class="text">Você lê <strong>1 página</strong>, decide, executa</div></div>
+    <p style="margin-top: 24px; color: #94a3b8;">Custo: <strong>6 chamadas</strong> (5 conselheiros + 1 presidente). Plano Pro: 4-10 convocações por dia.</p>
+  </section>
+
+  <!-- 7. CASOS DE USO -->
+  <section class="slide">
+    <div class="pill">Casos de Uso</div>
+    <h2>Para qualquer decisão em que estar errado custa caro</h2>
+    <div class="grid">
+      <div class="card"><h3>Decisão estratégica</h3><p>"Devo lançar workshop pago ou aulão grátis?"</p></div>
+      <div class="card"><h3>Contratação</h3><p>"Contrato vendedor agora ou espero 6 meses?"</p></div>
+      <div class="card"><h3>Pricing</h3><p>"Subo o ticket de R$ 5K pra R$ 12K ou foco em volume?"</p></div>
+      <div class="card"><h3>Pós-mortem</h3><p>"Contratei o João, deu errado. O que eu não vi?"</p></div>
+      <div class="card"><h3>Revisão de código</h3><p>"Tem problema nessa arquitetura? Algum risco?"</p></div>
+      <div class="card"><h3>Copy</h3><p>"Qual desses 3 ângulos de posicionamento é mais forte?"</p></div>
+    </div>
+  </section>
+
+  <!-- 8. DUAS FORMAS DE USAR -->
+  <section class="slide">
+    <div class="pill">Duas formas de usar</div>
+    <h2>Skill instalada vs atalho rápido</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Forma 1 — Skill instalada</h3>
+        <p style="margin-bottom: 10px;"><strong>Controlada, com gatilhos prontos.</strong></p>
+        <p>Baixe SKILL.md do GitHub, copie pra <code>~/.claude/skills/llm-council/</code>, reinicie Claude Code.</p>
+        <p style="margin-top: 8px;">Use: <code>convoca o conselho: ...</code></p>
+      </div>
+      <div class="card">
+        <h3>Forma 2 — Atalho sem instalar</h3>
+        <p style="margin-bottom: 10px;"><strong>Funciona em qualquer Claude.</strong></p>
+        <p>Pede direto: <em>"simula 3 agentes diferentes debatendo entre si até chegarem numa conclusão sobre X"</em>.</p>
+        <p style="margin-top: 8px;">Menos polido, mas serve pra qualquer caso.</p>
+      </div>
+    </div>
+    <p style="margin-top: 28px; color: #fbbf24; text-align: center;"><strong>O método é o que vale. A skill só automatiza o ritual.</strong></p>
+  </section>
+
+  <!-- 9. INSTALAR -->
+  <section class="slide">
+    <div class="pill">Instalar</div>
+    <h2>3 passos, 5 minutos</h2>
+    <ul>
+      <li>Baixe o ZIP no GitHub (botão "Code" → "Download ZIP")</li>
+      <li>Descompacte, abra terminal/PowerShell na pasta</li>
+      <li>Rode os comandos do README pra seu sistema (Win/Mac/Linux)</li>
+      <li>Reinicie o Claude Code</li>
+      <li>Teste com o smoke test: <code>convoca o conselho: devo cobrar mensal ou anual?</code></li>
+    </ul>
+    <a class="big-link" href="https://github.com/expertintegrado/conselho">github.com/expertintegrado/conselho</a>
+    <p style="margin-top: 24px; color: #94a3b8;">README tem comandos prontos pra Win/Mac/Linux + troubleshooting + glossário pra quem é novo no Claude Code.</p>
+  </section>
+
+  <!-- 10. TAKE-AWAYS -->
+  <section class="slide">
+    <div class="pill">Resumo</div>
+    <h2>3 take-aways pra levar</h2>
+    <div class="takeaways">
+      <div class="takeaway">
+        <div class="takeaway-num">01</div>
+        <div class="takeaway-text"><strong>IA sozinha concorda demais.</strong> Pra decisão cara, force-a a discordar de si mesma.</div>
+      </div>
+      <div class="takeaway">
+        <div class="takeaway-num">02</div>
+        <div class="takeaway-text"><strong>5 conselheiros + 1 presidente é o sweet spot.</strong> Diversidade de ângulos + síntese forçada em 1 página.</div>
+      </div>
+      <div class="takeaway">
+        <div class="takeaway-num">03</div>
+        <div class="takeaway-text"><strong>Você pode usar a skill ou pedir direto.</strong> O método é o que vale — qualquer Claude/IA agentic consegue rodar a metodologia.</div>
+      </div>
+    </div>
+    <p style="margin-top: 32px; color: #6ee7b7; font-size: clamp(18px, 2vw, 24px);"><strong>Próximo passo:</strong> instala em 5 min, testa no smoke test, usa na próxima decisão de R$ 5K+ que você tiver.</p>
+  </section>
+
+</div>
+
+<div class="footer-brand">Expert Integrado · Eric Luciano</div>
+<div class="nav">
+  <button onclick="prev()" aria-label="Anterior">← Anterior</button>
+  <span class="counter" id="counter">1 / 10</span>
+  <button onclick="next()" aria-label="Próximo">Próximo →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const progressBar = document.getElementById('progressBar');
+  let current = 0;
+
+  function show(i) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(i, slides.length - 1));
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+  }
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+    else if (/^[0-9]$/.test(e.key)) { const n = parseInt(e.key); show(n === 0 ? 9 : n - 1); }
+  });
+
+  // click to advance (mas não nos botões/links)
+  document.querySelector('.deck').addEventListener('click', (e) => {
+    if (e.target.closest('button, a, .nav')) return;
+    next();
+  });
+
+  show(0);
+</script>
+</body>
+</html>
