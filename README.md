@@ -108,13 +108,33 @@ cp ./SKILL.md ~/.claude/skills/llm-council/SKILL.md
 ls -la ~/.claude/skills/llm-council/SKILL.md
 ```
 
-### Passo 3 — reinicie o Claude Code
+### Passo 3 (opcional) — instale o slash command `/conselho`
+
+Pra ter um atalho mais direto (`/conselho devo X ou Y?` em vez de `convoca o conselho: ...`), copie o `commands/conselho.md` pra pasta de comandos do Claude Code:
+
+#### 🪟 Windows (PowerShell)
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\commands" | Out-Null
+Copy-Item -Path ".\commands\conselho.md" -Destination "$env:USERPROFILE\.claude\commands\conselho.md" -Force
+```
+
+#### 🍎 macOS / 🐧 Linux
+
+```bash
+mkdir -p ~/.claude/commands
+cp ./commands/conselho.md ~/.claude/commands/conselho.md
+```
+
+Depois disso, basta digitar `/conselho` no Claude Code e a sua pergunta. Ex: `/conselho devo lançar workshop pago ou aulão grátis?`
+
+### Passo 4 — reinicie o Claude Code
 
 Feche e abra de novo (`Ctrl+C` e depois `claude`). Sem reiniciar, a skill nova não carrega.
 
-### Passo 4 — confirme que carregou
+### Passo 5 — confirme que carregou
 
-Rode `/help` no Claude Code. Se a skill carregou, ela aparece na lista. Se não aparecer, veja [Quando algo der errado](#quando-algo-der-errado) abaixo.
+Rode `/help` no Claude Code. Se a skill carregou, ela aparece na lista. Se você instalou o slash command, digite `/` e veja se `/conselho` aparece. Se não aparecer, veja [Quando algo der errado](#quando-algo-der-errado) abaixo.
 
 ---
 
@@ -124,6 +144,12 @@ Cole isso no Claude Code pra ver o conselho funcionando pela primeira vez:
 
 ```
 convoca o conselho: devo lançar workshop pago de R$ 97 ou aulão grátis pra construir lista? Audiência de 8K, lista de 1,2K. Objetivo: testar produto de R$ 1.997.
+```
+
+Ou, se instalou o slash command, mais curto:
+
+```
+/conselho devo lançar workshop pago de R$ 97 ou aulão grátis pra construir lista? Audiência de 8K, lista de 1,2K. Objetivo: testar produto de R$ 1.997.
 ```
 
 Vai demorar 1-2 minutos. Você verá o Claude convocar 5 conselheiros em paralelo e depois um presidente. No final, um veredito estruturado em markdown com onde concordam, onde se chocam, recomendação e única coisa pra fazer primeiro.
