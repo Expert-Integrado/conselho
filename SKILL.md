@@ -1,6 +1,5 @@
 ---
 name: llm-council
-version: 1.0.0
 description: "Passa qualquer pergunta, decisão, código ou ideia por um conselho de 5 conselheiros que analisam de forma independente, fazem revisão por pares anonimamente, e sintetizam um veredito final. Funciona pra decisões estratégicas, revisão de código, arquitetura, copy, posicionamento — qualquer coisa em que estar errado custa caro. CUSTO: cada convocação dispara ~11 sub-agentes (5 conselheiros + 5 revisores + 1 presidente). No plano Pro do Claude Code, espera 2-5 convocações antes de bater rate limit. Plano Max recomendado pra uso recorrente. GATILHOS OBRIGATÓRIOS (PT-BR): 'convoca o conselho', 'roda o conselho', 'leva pro conselho', 'submete ao conselho', 'debate isto', 'revisa em conselho', 'conselho desse código'. GATILHOS OBRIGATÓRIOS (inglês): 'council this', 'run the council', 'debate this'. GATILHOS FORTES (use quando combinados com uma decisão real ou tradeoff): 'devo fazer X ou Y', 'qual opção', 'o que você faria', 'é a jogada certa', 'me dá várias perspectivas', 'não consigo decidir', 'estou dividido entre', 'revisa esse código', 'algum problema nessa arquitetura', 'should I X or Y', 'which option', 'what would you do', 'is this the right move', 'get multiple perspectives'. NÃO dispare em perguntas casuais como 'valida esse título', 'devo usar markdown', 'tá bom esse texto?' — esses são contextos de baixo risco e o conselho é overhead. DISPARE quando o usuário apresenta uma decisão genuína com algo em jogo, múltiplas opções, ou um artefato (código, copy, arquitetura, plano) que merece pressão de vários ângulos."
 ---
 
@@ -8,9 +7,13 @@ description: "Passa qualquer pergunta, decisão, código ou ideia por um conselh
 
 Você pergunta uma coisa pra uma IA, recebe uma resposta. Essa resposta pode ser ótima. Pode ser mediana. Você não tem como saber, porque só viu uma perspectiva.
 
-O conselho resolve isso. Ele passa a sua pergunta (ou seu código, ou seu plano) por 5 conselheiros independentes, cada um pensando a partir de um ângulo fundamentalmente diferente. Depois eles revisam o trabalho uns dos outros. Depois um presidente sintetiza tudo numa recomendação final que te diz onde os conselheiros concordam, onde se chocam, e o que você deve realmente fazer.
+O conselho resolve isso. Ele passa a sua pergunta (ou seu código, ou seu plano) por 5 conselheiros, cada um pensando a partir de um ângulo fundamentalmente diferente. Depois eles revisam o trabalho uns dos outros. Depois um presidente sintetiza tudo numa recomendação final que te diz onde os conselheiros concordam, onde se chocam, e o que você deve realmente fazer.
 
-A ideia central é simples: cinco lentes independentes pegam mais pontos cegos do que uma lente brilhante. A revisão por pares anônima é o que separa "perguntar 5 vezes" de um conselho real — quando os conselheiros não sabem quem disse o quê, eles avaliam pelo mérito.
+## Honestidade epistêmica logo de cara
+
+Os 5 conselheiros são sub-agentes que rodam o **mesmo modelo** (Claude). A "independência" entre eles vem do prompt, não da arquitetura — não são cinco mentes diferentes, são uma mente forçada a usar cinco lentes diferentes. O Karpathy original usa modelos distintos pra obter independência de pesos; aqui é um substituto pragmático.
+
+O valor real, então, NÃO é "5 mentes votam". É **anti-viés-de-confirmação estruturado**: o conselho impede o modelo de convergir prematuramente numa única resposta, força a ver o problema por ângulos que ele tenderia a pular, e a revisão por pares anônima evita deferência ao tom de cada conselheiro. Use o conselho com essa expectativa — não como oráculo de cinco oráculos. É overhead útil pra decisões caras, exagero pra decisões pequenas.
 
 ---
 
@@ -274,7 +277,7 @@ Salve uma transcrição apenas se o usuário pedir ou se a pergunta for signific
 
 **O Expansionista:** "Faz os dois — sequenciais. Aulão grátis primeiro pra puxar 800-1500 inscritos da audiência atual. Termina o aulão com oferta do workshop de R$ 97. Quem paga vira público pré-qualificado pro R$ 1.997 daqui a 60 dias. Funil de 3 níveis ataca curiosos, mornos e prontos no mesmo cohort. O caro é descartar 80% do funil indo direto pro pago — o grátis é a porta que multiplica o pipeline."
 
-**O Forasteiro:** "Eu não te conheço. Vejo um anúncio de R$ 97 pra workshop seu — não compro porque não sei se você entrega valor. Vejo um aulão grátis com promessa concreta — entro porque é zero risco. Saio do aulão tendo experimentado seu jeito. Aí seu R$ 1.997 vira possível porque eu já consumi e gostei. A barreira do R$ 97 é alta pra alguém que ainda não tem prova. Lembra que você está visível pra 8K — só uns 200 te conhecem de verdade."
+**O Forasteiro:** "Eu não te conheço. Vejo um anúncio de R$ 97 pra workshop seu — não compro porque não sei se você entrega valor. Vejo um aulão grátis com promessa concreta — entro porque é zero risco. Saio do aulão tendo experimentado seu jeito. Aí seu R$ 1.997 vira possível porque eu já consumi e gostei. A barreira do R$ 97 é alta pra alguém que ainda não tem prova. Lembra: você está visível pra 8K seguidores e tem lista de 1,2K, mas a fração que já consumiu seu conteúdo a fundo é menor — e é só essa fração que paga R$ 97 sem prova prévia."
 
 **O Executor:** "Anuncia o aulão grátis pra semana que vem. 7 dias pra criar landing simples, sequência de 3 e-mails, conteúdo do aulão. Workshop pago precisa de mais infraestrutura (página de venda, recibo, suporte, garantia). Você ganha 30 dias entre validar o aulão e lançar o pago — usando o resultado do aulão como termômetro pra ajustar o pago. Se 8K seguidores virarem 1K inscritos no grátis, segue pro pago. Se virarem 200, o problema é audiência, não preço."
 
