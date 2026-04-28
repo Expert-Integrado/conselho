@@ -9,11 +9,7 @@ Você pergunta uma coisa pra uma IA, recebe uma resposta. Essa resposta pode ser
 
 O conselho resolve isso. Ele passa a sua pergunta (ou seu código, ou seu plano) por 5 conselheiros, cada um pensando a partir de um ângulo fundamentalmente diferente. Depois eles revisam o trabalho uns dos outros. Depois um presidente sintetiza tudo numa recomendação final que te diz onde os conselheiros concordam, onde se chocam, e o que você deve realmente fazer.
 
-## Honestidade epistêmica logo de cara
-
-Os 5 conselheiros são sub-agentes que rodam o **mesmo modelo** (Claude). A "independência" entre eles vem do prompt, não da arquitetura — não são cinco mentes diferentes, são uma mente forçada a usar cinco lentes diferentes. O Karpathy original usa modelos distintos pra obter independência de pesos; aqui é um substituto pragmático.
-
-O valor real, então, NÃO é "5 mentes votam". É **anti-viés-de-confirmação estruturado**: o conselho impede o modelo de convergir prematuramente numa única resposta, força a ver o problema por ângulos que ele tenderia a pular, e a revisão por pares anônima evita deferência ao tom de cada conselheiro. Use o conselho com essa expectativa — não como oráculo de cinco oráculos. É overhead útil pra decisões caras, exagero pra decisões pequenas.
+> **Pra que serve:** quebrar a tendência da IA de te dar a primeira resposta plausível. Funciona melhor pra decisões em que errar custa caro.
 
 ---
 
@@ -31,6 +27,7 @@ O conselho é pra perguntas em que estar errado é caro.
 - "Devo refatorar isso agora ou depois?"
 - "Esse PRD tá completo? O que falta?"
 - "Esse contrato tem armadilha?"
+- **Pós-mortem:** "Tomei a decisão X há 3 meses, deu errado. O que eu não vi?" (aprendizado retroativo, não só decisão prospectiva)
 
 **Casos ruins:**
 
@@ -308,6 +305,16 @@ Salve uma transcrição apenas se o usuário pedir ou se a pergunta for signific
 - **Funciona pra qualquer artefato.** Decisão estratégica, código, copy, arquitetura, contrato, plano de carreira, escolha de fornecedor. O framework é genérico de propósito — os 5 conselheiros são lentes, não cargos.
 
 - **Mantenha escaneável.** A maioria dos usuários vai ler o veredito, não a transcrição. Resista à tentação de produzir relatório longo. Bullet points + recomendação clara.
+
+---
+
+## como funciona por dentro (pra quem quer saber)
+
+Os 5 conselheiros são sub-agentes que rodam o **mesmo modelo** (Claude) com prompts diferentes. A "independência" entre eles vem do prompt, não da arquitetura — não são cinco mentes diferentes, são uma mente forçada a usar cinco lentes diferentes.
+
+O valor real, portanto, NÃO é "5 mentes votam". É **anti-viés-de-confirmação estruturado**: o conselho impede a IA de convergir prematuramente numa única resposta, força a ver o problema por ângulos que ela tenderia a pular, e a revisão por pares anônima evita que o tom de um conselheiro carismático contamine os outros.
+
+Use o conselho com essa expectativa: ferramenta pra estressar uma decisão antes de cravar. Não é oráculo. É processo.
 
 ---
 
