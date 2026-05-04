@@ -1,0 +1,14 @@
+{
+  "name": "conselho",
+  "version": "2.0.0",
+  "description": "Conselho de LLMs — 5 conselheiros com estilos de pensamento distintos + 1 presidente sintetizam um veredito acionavel. Pra decisoes, code review, arquitetura, copy — qualquer coisa em que errar custa caro.",
+  "author": {
+    "name": "Eric Luciano Ferreira",
+    "email": "operacoes@expertintegrado.com.br",
+    "url": "https://expertintegrado.com.br"
+  },
+  "homepage": "https://github.com/expertintegrado/conselho",
+  "repository": "https://github.com/expertintegrado/conselho",
+  "license": "MIT",
+  "keywords": ["llm", "conselho", "council", "decisao", "code-review", "multi-agent"]
+}
