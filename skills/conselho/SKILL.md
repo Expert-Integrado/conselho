@@ -1,13 +1,13 @@
 ---
 name: conselho
-description: "Passa qualquer pergunta, decisão, código ou ideia por um conselho de 5 conselheiros com estilos de pensamento distintos. Cada um analisa em paralelo, e um presidente sintetiza num veredito final claro e acionável. Funciona pra decisões estratégicas, revisão de código, arquitetura, copy, posicionamento — qualquer coisa em que estar errado custa caro. CUSTO: cada convocação dispara 6 sub-agentes (5 conselheiros + 1 presidente). No plano Pro do Claude Code dá pra fazer 4-10 convocações antes de bater rate limit. GATILHOS OBRIGATÓRIOS (PT-BR): 'convoca o conselho', 'roda o conselho', 'leva pro conselho', 'submete ao conselho', 'debate isto', 'revisa em conselho', 'conselho desse código'. GATILHOS OBRIGATÓRIOS (inglês): 'council this', 'run the council', 'debate this'. GATILHOS FORTES (use quando combinados com uma decisão real ou tradeoff): 'devo fazer X ou Y', 'qual opção', 'o que você faria', 'é a jogada certa', 'me dá várias perspectivas', 'não consigo decidir', 'estou dividido entre', 'revisa esse código', 'algum problema nessa arquitetura', 'should I X or Y', 'which option', 'what would you do', 'is this the right move', 'get multiple perspectives'. NÃO dispare em perguntas casuais como 'valida esse título', 'devo usar markdown', 'tá bom esse texto?' — esses são contextos de baixo risco e o conselho é overhead. DISPARE quando o usuário apresenta uma decisão genuína com algo em jogo, múltiplas opções, ou um artefato (código, copy, arquitetura, plano) que merece pressão de vários ângulos."
+description: "Use quando o usuário traz uma decisão genuína com algo em jogo, múltiplas opções, ou um artefato (código, copy, arquitetura, plano) que merece pressão de vários ângulos. CUSTO: cada convocação dispara 6 sub-agentes — no plano Pro do Claude Code dá pra fazer 4-10 antes de bater rate limit. GATILHOS OBRIGATÓRIOS (PT-BR): 'convoca o conselho', 'roda o conselho', 'leva pro conselho', 'submete ao conselho', 'debate isto', 'revisa em conselho', 'conselho desse código'. GATILHOS OBRIGATÓRIOS (inglês): 'council this', 'run the council', 'debate this'. GATILHOS FORTES (só com decisão/tradeoff real): 'devo fazer X ou Y', 'qual opção', 'o que você faria', 'é a jogada certa', 'me dá várias perspectivas', 'não consigo decidir', 'estou dividido entre', 'revisa esse código', 'problema nessa arquitetura', 'should I X or Y', 'which option', 'what would you do'. NÃO dispare em pedidos casuais de baixo risco ('valida esse título', 'tá bom esse texto?') — vira overhead."
 ---
 
 # Conselho de LLMs
 
 Você pergunta uma coisa pra uma IA, recebe uma resposta. Essa resposta pode ser ótima. Pode ser mediana. Você não tem como saber, porque só viu uma perspectiva.
 
-O conselho resolve isso. Ele passa a sua pergunta (ou seu código, ou seu plano) por 5 conselheiros, cada um pensando a partir de um ângulo fundamentalmente diferente. Depois eles revisam o trabalho uns dos outros. Depois um presidente sintetiza tudo numa recomendação final que te diz onde os conselheiros concordam, onde se chocam, e o que você deve realmente fazer.
+O conselho resolve isso. Ele passa a sua pergunta (ou seu código, ou seu plano) por 5 conselheiros, cada um pensando a partir de um ângulo fundamentalmente diferente. Depois um presidente sintetiza tudo numa recomendação final que te diz onde os conselheiros concordam, onde se chocam, e o que você deve realmente fazer.
 
 > **Pra que serve:** quebrar a tendência da IA de te dar a primeira resposta plausível. Funciona melhor pra decisões em que errar custa caro.
 
@@ -110,7 +110,7 @@ Salve a pergunta enquadrada pra transcrição.
 
 ### passo 2: convocar o conselho (5 sub-agentes em paralelo)
 
-Convoque todos os 5 conselheiros simultaneamente como sub-agentes. Cada um recebe:
+Dispare os 5 conselheiros como sub-agentes REAIS via Task tool, em UMA única mensagem (5 chamadas Task no mesmo bloco) pra rodarem em paralelo. NÃO simule as 5 vozes inline você mesmo — sub-agentes de verdade são o que garante independência e quebra o viés de confirmação; encenar as 5 perspectivas na mesma cabeça anula o mecanismo. Cada sub-agente recebe:
 
 1. Sua identidade de conselheiro e estilo de pensamento (das descrições acima)
 2. A pergunta enquadrada
