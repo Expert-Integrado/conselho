@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "Conselho de LLMs — 5 conselheiros com estilos distintos + presidente que sintetiza um veredito acionavel",
-    "version": "2.0.0"
+    "version": "2.0.1"
   },
   "plugins": [
     {
       "name": "conselho",
       "source": "./",
       "description": "Skill do Claude Code que passa qualquer pergunta, decisao, codigo ou ideia por um conselho de 5 conselheiros (Contrario, Pergunta-Por-Que, Expansionista, Forasteiro, Executor) + 1 presidente. Quebra a primeira resposta plausivel da IA — usar quando errar custa caro.",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "category": "productivity",
       "tags": ["llm", "conselho", "council", "decisao", "code-review", "produtividade"]
     }
