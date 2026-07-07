@@ -1,8 +1,8 @@
 # Conselho de LLMs
 
-Skill do Claude Code que transforma uma pergunta, decisão ou artefato em **cinco perspectivas independentes + revisão por pares + veredito final**.
+Skill do Claude Code que transforma uma pergunta, decisão ou artefato em **cinco perspectivas independentes + veredito final**.
 
-> **Versão:** 2.0.0
+> **Versão:** 2.1.1
 
 ## O que é
 
@@ -60,7 +60,7 @@ Opções:
 - **Download direto (mais simples):** clique em "Code" → "Download ZIP" no GitHub, descompacte em algum lugar (ex: `Downloads`)
 - **Git clone:** `git clone <URL deste repositório>` na pasta da sua escolha
 
-Depois desse passo você tem uma pasta com o `SKILL.md` dentro.
+Depois desse passo você tem uma pasta com a skill em `skills/conselho/SKILL.md`.
 
 ### Passo 2 — copie o `SKILL.md` pra pasta de skills do Claude Code
 
@@ -73,13 +73,13 @@ Depois desse passo você tem uma pasta com o `SKILL.md` dentro.
 cd "$env:USERPROFILE\Downloads\conselho-main"
 
 # 2. Cria a pasta da skill (não erra se já existe)
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\llm-council" | Out-Null
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\conselho" | Out-Null
 
 # 3. Copia o SKILL.md
-Copy-Item -Path ".\SKILL.md" -Destination "$env:USERPROFILE\.claude\skills\llm-council\SKILL.md" -Force
+Copy-Item -Path ".\skills\conselho\SKILL.md" -Destination "$env:USERPROFILE\.claude\skills\conselho\SKILL.md" -Force
 
 # 4. Confirma
-Get-Item "$env:USERPROFILE\.claude\skills\llm-council\SKILL.md"
+Get-Item "$env:USERPROFILE\.claude\skills\conselho\SKILL.md"
 ```
 
 > **Atenção OneDrive (corporativo ou pessoal):** se sua pasta de usuário está sendo redirecionada pelo OneDrive, o comando pode salvar em `OneDrive\.claude` em vez de `.claude` — e o Claude Code não lê de lá. Sintoma: skill não aparece em `/help` mesmo após instalar.
@@ -90,7 +90,7 @@ Get-Item "$env:USERPROFILE\.claude\skills\llm-council\SKILL.md"
 > 3. Rode os comandos da skill, reinicie o Claude Code, confirme em `/help`.
 > 4. Pode reativar OneDrive depois — a pasta `.claude` já estará criada no lugar certo.
 >
-> Se mesmo assim a pasta foi pra dentro do OneDrive: rode `Test-Path "$env:USERPROFILE\OneDrive\.claude\skills\llm-council\SKILL.md"` no PowerShell. Se retornar `True`, mova manualmente: clique-direito → recortar → cole em `C:\Users\SEU_USUARIO\.claude\skills\llm-council\` (cria a pasta se não existir).
+> Se mesmo assim a pasta foi pra dentro do OneDrive: rode `Test-Path "$env:USERPROFILE\OneDrive\.claude\skills\conselho\SKILL.md"` no PowerShell. Se retornar `True`, mova manualmente: clique-direito → recortar → cole em `C:\Users\SEU_USUARIO\.claude\skills\conselho\` (cria a pasta se não existir).
 
 #### 🍎 macOS / 🐧 Linux
 
@@ -101,11 +101,11 @@ Get-Item "$env:USERPROFILE\.claude\skills\llm-council\SKILL.md"
 cd ~/Downloads/conselho-main
 
 # 2. Cria a pasta + copia o SKILL.md
-mkdir -p ~/.claude/skills/llm-council
-cp ./SKILL.md ~/.claude/skills/llm-council/SKILL.md
+mkdir -p ~/.claude/skills/conselho
+cp ./skills/conselho/SKILL.md ~/.claude/skills/conselho/SKILL.md
 
 # 3. Confirma
-ls -la ~/.claude/skills/llm-council/SKILL.md
+ls -la ~/.claude/skills/conselho/SKILL.md
 ```
 
 ### Passo 3 (opcional) — instale o slash command `/conselho`
@@ -217,15 +217,15 @@ Pergunta vaga ("devo contratar?") gera veredito vago. Pergunta enquadrada gera d
 
 | Sintoma | O que tentar |
 |---|---|
-| **Skill não aparece em `/help`** | Verifique o caminho exato: tem que ser `~/.claude/skills/llm-council/SKILL.md` (Windows: `C:\Users\SEU_USUARIO\.claude\skills\llm-council\SKILL.md`). Reinicie o Claude Code. Se está no OneDrive, mova pra fora. |
+| **Skill não aparece em `/help`** | Verifique o caminho exato: tem que ser `~/.claude/skills/conselho/SKILL.md` (Windows: `C:\Users\SEU_USUARIO\.claude\skills\conselho\SKILL.md`). Reinicie o Claude Code. Se está no OneDrive, mova pra fora. |
 | **`Cannot find path '.\SKILL.md'`** | Você não fez `cd` pra dentro da pasta descompactada, ou descompactou em outro lugar. Substitua `Downloads` pelo caminho real onde está o arquivo. Exemplos: descompactou no Desktop → `cd "$env:USERPROFILE\Desktop\conselho-main"`; em Documentos → `cd "$env:USERPROFILE\Documents\conselho-main"`; ou clique com botão direito no arquivo `SKILL.md` → "Copiar como caminho" pra ver o path completo. |
 | **PowerShell: `cannot be loaded because running scripts is disabled`** | Os comandos deste README NÃO precisam mudar essa política — usam só built-ins (`New-Item`, `Copy-Item`). Se mesmo assim travar, abra PowerShell como administrador e rode `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. |
 | **`mkdir: command not found` (Windows)** | Você está no `cmd.exe`, não no PowerShell. Abra PowerShell (tecla Windows → digite "PowerShell"). |
 | **Defender / SmartScreen bloqueia o ZIP** | Clique em "Mais informações" → "Executar mesmo assim". O ZIP só contém arquivos de texto (SKILL.md + README.md). |
-| **Falei "convoca o conselho" e nada disparou** | Tente uma frase mais explícita: `usa a skill llm-council pra avaliar X` ou `quero o conselho de LLMs sobre X`. |
+| **Falei "convoca o conselho" e nada disparou** | Tente uma frase mais explícita: `usa a skill conselho pra avaliar X` ou `quero o conselho de LLMs sobre X`. |
 | **Erro "rate limit" no meio da execução** | Você bateu o limite do seu plano. Aguarde a janela renovar (geralmente 5h) ou suba pra plano Max. |
 | **Sub-agente travou e não respondeu** | Roda de novo. Se persistir 2x seguidas, pode ser instabilidade do Claude Code naquele momento — espera 10 min e tenta de novo. |
-| **Quero desinstalar** | Apague a pasta `~/.claude/skills/llm-council` (Mac/Linux) ou `%USERPROFILE%\.claude\skills\llm-council` (Windows). Reinicie o Claude Code. |
+| **Quero desinstalar** | Apague a pasta `~/.claude/skills/conselho` (Mac/Linux) ou `%USERPROFILE%\.claude\skills\conselho` (Windows). Reinicie o Claude Code. |
 
 ---
 

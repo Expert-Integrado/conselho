@@ -3,7 +3,7 @@ description: Convoca o Conselho de LLMs pra avaliar uma decisão, código ou ide
 argument-hint: <sua pergunta com contexto>
 ---
 
-Use a skill `llm-council` pra avaliar a pergunta abaixo seguindo a metodologia completa (5 conselheiros em paralelo + presidente sintetizando o veredito final):
+Use a skill `conselho` pra avaliar a pergunta abaixo seguindo a metodologia completa (5 conselheiros em paralelo + presidente sintetizando o veredito final):
 
 $ARGUMENTS
 
