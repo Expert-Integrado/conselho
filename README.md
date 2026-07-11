@@ -54,6 +54,36 @@ Da v1 pra v2 cortamos o passo de peer review entre conselheiros. Razão: Karpath
 
 ## Instalação
 
+### Instalação assistida (recomendada)
+
+Abra o Claude Code e cole o prompt abaixo; o Claude conduz a instalação inteira, inclusive as etapas de navegador se você deixar.
+
+```text
+Quero instalar a skill "Conselho de LLMs" do repositório https://github.com/Expert-Integrado/conselho e você vai conduzir a instalação inteira pra mim, etapa por etapa, confirmando cada resultado antes de seguir. Protocolo:
+
+1. Pré-requisitos: confirme que estamos no Claude Code (aplicativo de terminal, não o Claude.ai). Me avise que cada convocação do conselho dispara 6 sub-agentes: no plano Free dá 1-2 convocações antes do rate limit, no Pro 4-10, no Max sem preocupação prática. Se eu estiver no Free, pergunte se quero seguir mesmo assim.
+
+2. Baixe os arquivos: rode git clone https://github.com/Expert-Integrado/conselho.git numa pasta temporária. Se o git não estiver disponível, use o ZIP: https://github.com/Expert-Integrado/conselho/archive/refs/heads/main.zip
+
+3. Instale a skill: crie a pasta ~/.claude/skills/conselho (Windows: %USERPROFILE%\.claude\skills\conselho) e copie skills/conselho/SKILL.md pra lá. No Windows, verifique se a pasta .claude não caiu dentro do OneDrive (o Claude Code não lê de lá); se caiu, corrija antes de seguir, conforme a seção de instalação do README.
+
+4. Instale também o slash command: copie commands/conselho.md pra ~/.claude/commands/conselho.md (Windows: %USERPROFILE%\.claude\commands\conselho.md).
+
+5. Para QUALQUER etapa que aconteça em navegador (por exemplo, baixar o ZIP pelo site do GitHub ou abrir a página do projeto), pergunte antes com AskUserQuestion (botões) qual rota eu prefiro: (a) você faz por mim via Playwright MCP, e se ele não estiver instalado ofereça instalar com claude mcp add playwright -- npx -y @playwright/mcp@latest; (b) você faz via Claude in Chrome; (c) eu faço manualmente com você me guiando. Logins são sempre meus: nunca digite credenciais por mim.
+
+6. Esta skill não usa chave de API nem segredo. Se alguma etapa pedir credencial, ela nunca deve aparecer no chat: me oriente a colocá-la direto no destino final e depois valide com uma chamada real de teste.
+
+7. Valide: confirme que os arquivos existem nos caminhos finais, me peça pra reiniciar o Claude Code (fechar e abrir de novo) e, na nova sessão, conferir se a skill aparece em /help e se /conselho aparece ao digitar /.
+
+8. Teste ponta a ponta: proponha rodar o teste de fumaça do README (uma convocação real do conselho) e confirme que saiu o veredito estruturado.
+
+9. Termine com um resumo do que foi configurado: caminhos dos arquivos instalados, frases-gatilho e como usar o /conselho.
+
+Se algo falhar, consulte a tabela "Quando algo der errado" do README antes de improvisar. Não invente comandos que não estão no README.
+```
+
+### Instalação manual (alternativa)
+
 > **Os comandos abaixo só baixam um arquivo de texto e copiam pra uma pasta dentro do seu próprio usuário.** Não mexem em nada do sistema, não pedem senha de admin, não instalam programa.
 
 ### Passo 1 — baixe os arquivos deste repo
