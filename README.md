@@ -1,5 +1,7 @@
 # Conselho de LLMs
 
+**[→ Como funciona o Conselho](https://expert-integrado.github.io/conselho/)** — a página do projeto, com o sistema explicado visualmente.
+
 Skill do Claude Code que transforma uma pergunta, decisão ou artefato em **cinco perspectivas independentes + veredito final**.
 
 > **Versão:** 2.1.1
