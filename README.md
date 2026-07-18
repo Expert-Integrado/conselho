@@ -4,6 +4,8 @@
 
 Skill do Claude Code que transforma uma pergunta, decisão ou artefato em **cinco perspectivas independentes + veredito final**.
 
+Open source, criado por **Eric Luciano** na **Mentoria Automações Inteligentes** (Expert Integrado).
+
 > **Versão:** 2.1.1
 
 ## O que é
